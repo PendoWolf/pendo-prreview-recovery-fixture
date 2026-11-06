@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, type AppState } from "./api";
+import { api, ApiError, type AppState } from "./api";
 
 // Seam for Pendo. Novus installs the Pendo agent, which provides window.pendo
 // at runtime; this fires a Track Event for each action. No-op when the agent
@@ -21,6 +21,17 @@ export default function App() {
       trackEvent(name);
     } catch (e) {
       setError((e as Error).message);
+      // Track Event: an API call (load, increment, decrement, reset, refresh)
+      // failed and the error message is shown to the user.
+      try {
+        window.pendo?.track?.("counter_action_failed", {
+          action: name,
+          httpStatus: e instanceof ApiError ? e.status : undefined,
+          endpoint: e instanceof ApiError ? e.endpoint : undefined,
+        });
+      } catch {
+        // Never let analytics break the app.
+      }
     }
   };
 

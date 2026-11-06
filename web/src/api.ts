@@ -7,9 +7,29 @@ export interface AppState {
   lastAction: string;
 }
 
+// Error thrown by call() so callers (e.g. the counter_action_failed Track Event)
+// can report which endpoint failed and with what HTTP status. `status` is
+// undefined when the request never got a response (network/CORS failure).
+export class ApiError extends Error {
+  readonly endpoint: string;
+  readonly status?: number;
+
+  constructor(message: string, endpoint: string, status?: number) {
+    super(message);
+    this.name = "ApiError";
+    this.endpoint = endpoint;
+    this.status = status;
+  }
+}
+
 async function call(path: string, method: "GET" | "POST"): Promise<AppState> {
-  const res = await fetch(`${BASE}${path}`, { method });
-  if (!res.ok) throw new Error(`${method} ${path} failed: ${res.status}`);
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, { method });
+  } catch (e) {
+    throw new ApiError((e as Error).message, path);
+  }
+  if (!res.ok) throw new ApiError(`${method} ${path} failed: ${res.status}`, path, res.status);
   return res.json() as Promise<AppState>;
 }
 
