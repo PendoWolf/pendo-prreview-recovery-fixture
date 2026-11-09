@@ -44,6 +44,8 @@ export default function App() {
         <button data-testid="btn-increment" onClick={() => run("increment", api.increment)}>
           Increment
         </button>
+        {/* Decrement: asks the server to subtract 1 from the shared counter (it can go below zero).
+            On success the new state is shown and a demo-decrement Track Event fires; on failure an error is shown and no event fires. */}
         <button data-testid="btn-decrement" onClick={() => run("decrement", api.decrement)}>
           Decrement
         </button>
