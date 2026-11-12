@@ -44,6 +44,8 @@ export default function App() {
         <button data-testid="btn-increment" onClick={() => run("increment", api.increment)}>
           Increment
         </button>
+        {/* Decrement: asks the API to lower the shared counter by 1 (no floor at zero,
+            so it can go negative), then shows the new value and fires demo-decrement. */}
         <button data-testid="btn-decrement" onClick={() => run("decrement", api.decrement)}>
           Decrement
         </button>
