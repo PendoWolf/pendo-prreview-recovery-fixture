@@ -20,7 +20,14 @@ export default function App() {
       setState(await fn());
       trackEvent(name);
     } catch (e) {
-      setError((e as Error).message);
+      const message = (e as Error).message;
+      setError(message);
+      // Pendo Track Event: a counter action or state fetch failed and the
+      // error message is shown.
+      window.pendo?.track?.("API error shown", {
+        action: name,
+        error_message: message.substring(0, 100),
+      });
     }
   };
 
